@@ -15,6 +15,7 @@ RUN addgroup -g $GID coder 2>/dev/null; \
 	GROUP_NAME=$(getent group $GID | cut -d: -f1); \
 	adduser -D -s /bin/sh -u $UID -G "$GROUP_NAME" coder \
     && mkdir -p /home/coder/.config/opencode \
+    && mkdir -p /home/coder/.local/share/opencode /home/coder/.cache/opencode /home/coder/.local/state/opencode \
     && chown -R coder:"$GROUP_NAME" /home/coder
 USER coder
 WORKDIR /workspace
