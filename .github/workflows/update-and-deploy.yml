@@ -31,6 +31,14 @@ jobs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Latest opencode version: $VERSION"
 
+    - name: Get latest gh version
+      id: gh
+      run: |
+        VERSION=$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest \
+          | jq -r '.tag_name')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Latest gh version: $VERSION"
+
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v3
       with:
@@ -76,3 +84,4 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         build-args: |
           OPENCODE_VERSION=${{ steps.opencode.outputs.version }}
+          GH_VERSION=${{ steps.gh.outputs.version }}

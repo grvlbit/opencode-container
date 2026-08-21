@@ -12,6 +12,27 @@ Opencode is an intelligent development assistant that helps developers write cod
 - Alpine Linux base with minimal footprint
 - User-friendly development setup with proper permissions
 - Ready-to-use opencode CLI tool
+- `curl`, `git`, and `gh` (GitHub CLI) pre-installed
+
+## GitHub Access with `gh`
+
+The GitHub CLI reads the `GH_TOKEN` environment variable automatically. If your
+`~/.opencode.env` file (loaded via `--env-file`) contains a `GH_TOKEN`, `gh` is
+authenticated out of the box — no `gh auth login` needed:
+
+```bash
+# In ~/.opencode.env
+GH_TOKEN=ghp_your_token_here
+```
+
+```bash
+# Then, inside the container:
+gh issue view 123 -R owner/repo
+gh api /user
+```
+
+Note: `gh` only updates when a new opencode release triggers an image rebuild
+(the image tag is keyed to the opencode version).
 
 ## Running the Container
 
