@@ -26,7 +26,7 @@ jobs:
     - name: Get latest opencode version
       id: opencode
       run: |
-        VERSION=$(curl -fsSL https://api.github.com/repos/sst/opencode/releases/latest \
+        VERSION=$(curl -fsSL https://api.github.com/repos/anomalyco/opencode/releases/latest \
           | jq -r '.tag_name // empty')
         VERSION="${VERSION#v}"
         if [ -z "$VERSION" ]; then
