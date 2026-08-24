@@ -4,7 +4,7 @@ ARG GID=1000
 ARG OPENCODE_VERSION=latest
 ARG GH_VERSION=2.98.0
 RUN apk add --no-cache curl ca-certificates bash libstdc++ libgcc git \
-    && if [ "$OPENCODE_VERSION" = "latest" ]; then \
+    && if [ -z "$OPENCODE_VERSION" ] || [ "$OPENCODE_VERSION" = "latest" ]; then \
          curl -fsSL https://opencode.ai/install | bash; \
        else \
          curl -fsSL https://opencode.ai/install | bash -s -- --version "$OPENCODE_VERSION"; \
