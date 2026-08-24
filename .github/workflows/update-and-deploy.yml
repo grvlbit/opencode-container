@@ -26,8 +26,13 @@ jobs:
     - name: Get latest opencode version
       id: opencode
       run: |
-        VERSION=$(curl -fsSL https://api.github.com/repos/anomalyco/opencode/releases/latest \
-          | jq -r '.tag_name')
+        VERSION=$(curl -fsSL https://api.github.com/repos/sst/opencode/releases/latest \
+          | jq -r '.tag_name // empty')
+        VERSION="${VERSION#v}"
+        if [ -z "$VERSION" ]; then
+          echo "WARNING: Could not fetch opencode version, defaulting to 'latest'"
+          VERSION="latest"
+        fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Latest opencode version: $VERSION"
 
@@ -35,7 +40,12 @@ jobs:
       id: gh
       run: |
         VERSION=$(curl -fsSL https://api.github.com/repos/cli/cli/releases/latest \
-          | jq -r '.tag_name')
+          | jq -r '.tag_name // empty')
+        VERSION="${VERSION#v}"
+        if [ -z "$VERSION" ]; then
+          echo "WARNING: Could not fetch gh version, using default"
+          VERSION="2.98.0"
+        fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Latest gh version: $VERSION"
 
