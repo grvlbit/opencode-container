@@ -26,12 +26,18 @@ jobs:
     - name: Get latest opencode version
       id: opencode
       run: |
-        VERSION=$(curl -fsSL https://api.github.com/repos/anomalyco/opencode/releases/latest \
-          | jq -r '.tag_name // empty')
-        VERSION="${VERSION#v}"
+        # GitHub's /releases/latest still points at a v1 tag, so use the opencode
+        # update API instead. This is the same source the v2 installer uses to
+        # resolve "latest", so the tag always matches a plain v2 install.
+        VERSION=$(curl -fsSL https://opencode.ai/update/api/latest/cli/npm \
+          | jq -r '.version // empty')
         if [ -z "$VERSION" ]; then
-          echo "WARNING: Could not fetch opencode version, defaulting to 'latest'"
-          VERSION="latest"
+          echo "ERROR: Could not fetch opencode v2 version from update API"
+          exit 1
+        fi
+        if [ "${VERSION%%.*}" != "2" ]; then
+          echo "ERROR: Expected a v2 opencode version, got $VERSION"
+          exit 1
         fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Latest opencode version: $VERSION"

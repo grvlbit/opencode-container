@@ -2,6 +2,10 @@
 
 This repository contains a Dockerfile that sets up a development environment for [Opencode](https://opencode.ai), an AI-powered development assistant.
 
+The image ships **OpenCode 2** (installed from the [v2 installer](https://opencode.ai/v2/install)). It is
+rebuilt daily by GitHub Actions, which pins the image tag to the newest stable OpenCode 2 release — OpenCode 2
+is no longer tagged `latest` upstream, so the image tag (e.g. `:2.2.6`) is the authoritative version indicator.
+
 ## What is Opencode?
 
 Opencode is an intelligent development assistant that helps developers write code, debug, and refactor applications. It leverages AI to provide contextual assistance throughout the development lifecycle.
@@ -41,8 +45,16 @@ docker run --rm -it \
   --env-file "$HOME/.opencode.env" \
   -v "$HOME/.config/opencode/opencode.json:/home/coder/.config/opencode/opencode.json:ro" \
   -v "$(pwd):/workspace:rw" \
-  ghcr.io/grvlbit/opencode-container:latest'
+  ghcr.io/grvlbit/opencode-container:latest
 ```
+
+> [!NOTE]
+> Existing OpenCode 1 configuration keeps working: OpenCode 2 reads the same
+> config locations (`~/.config/opencode/opencode.json`, project `opencode.json`,
+> `.opencode/`, etc.) and auto-migrates the V1 TUI config (`tui.json`) to the new
+> global `cli.json` on first run. See the
+> [V1 → V2 migration guide](https://opencode.ai/docs/migrate-v1/) for the full
+> picture (plugins and the server API changed and need porting).
 
 ## Building the Image
 
@@ -64,12 +76,19 @@ or inject your local UID/GID using:
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) --no-cache -t opencode-container .
 ```
 
+To build against a specific OpenCode 2 release instead of the newest one, pass
+`OPENCODE_VERSION`:
+
+```bash
+docker build --build-arg OPENCODE_VERSION=2.2.6 -t opencode-container .
+```
+
 ## Deployment Plan
 
 This repository includes automation for keeping the Docker image updated and deployed using GitHub Actions with GitHub Container Registry (GHCR):
 
 - Checks for updates daily at 2 AM UTC
-- Rebuilds the Docker image with the latest opencode version
+- Rebuilds the Docker image when a new stable OpenCode 2 release is detected (tagged `latest` and the version, e.g. `:2.2.6`)
 - Pushes the updated image to GitHub Container Registry
 
 ## License
