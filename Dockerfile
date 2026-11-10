@@ -5,12 +5,11 @@ ARG OPENCODE_VERSION=latest
 ARG GH_VERSION=2.98.0
 RUN apk add --no-cache curl ca-certificates bash libstdc++ libgcc git \
     && if [ -z "$OPENCODE_VERSION" ] || [ "$OPENCODE_VERSION" = "latest" ]; then \
-         curl -fsSL https://opencode.ai/install | bash; \
+         curl -fsSL https://opencode.ai/v2/install | bash; \
        else \
-         curl -fsSL https://opencode.ai/install | bash -s -- --version "$OPENCODE_VERSION"; \
+         curl -fsSL https://opencode.ai/v2/install | bash -s -- --version "$OPENCODE_VERSION"; \
        fi \
-    && ls -R /root/ \
-    && mv /root/.opencode/bin/opencode /usr/local/bin/opencode || echo "File not found!" \
+    && mv /root/.opencode/bin/opencode /usr/local/bin/opencode || { echo "opencode binary not found!" >&2; exit 1; } \
     && ARCH=$(case "$(uname -m)" in \
          x86_64) echo amd64 ;; \
          aarch64) echo arm64 ;; \
